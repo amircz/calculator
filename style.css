@@ -1,0 +1,43 @@
+#numbers{
+    border-color: black;
+    border-style: solid;
+    display: inline-block;
+    margin-bottom: 5px;
+    margin-left: 2px;
+}
+#operators{
+    border-color: black;
+    border-style: solid;
+    display: inline-block;
+    margin-right: 2px;
+}
+body{
+    width: fit-content;
+    height: fit-content;
+    border-color: black;
+    border-style: solid;
+}
+#numberBox{
+    
+    border-color: black;
+    border-style: solid;
+    margin-left: 2px;
+    margin-top: 35px;
+}
+#calcBody{
+    padding: 3px;
+}
+button{
+    background-color: cornflowerblue;
+    color: white;
+    border-color: black;
+    border-style: solid;
+    margin: 2px;
+    width: 30px;
+}
+#zero{
+    width: 60%;
+}
+#equal{
+    width: 90%;
+}
