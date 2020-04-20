@@ -50,14 +50,14 @@ function addListenersToEuqal() {
 function addListenersToNums() {
     for (var i = 0; i < numButtons.length; i++)
         numButtons[i].addEventListener("click", function () {
-            numberBox.value= addCharToTheEnd(numberBox.value, this.textContent);
+            numberBox.value = addCharToTheEnd(numberBox.value, this.textContent);
         })
 }
 function addListenerToDel() {
     var delButton = document.getElementById("del");
     delButton.addEventListener("click", function () {
-        if(numberBox.value[numberBox.value.length-1]==".")
-            hasPoint=false;
+        if (numberBox.value[numberBox.value.length - 1] == ".")
+            hasPoint = false;
         numberBox.value = removeLastChar(numberBox.value);
     })
 }
@@ -146,7 +146,7 @@ function removeLastChar(str) {
     }
     return result;
 }
-function addCharToTheEnd(str, ch){
+function addCharToTheEnd(str, ch) {
     return str.concat(ch);
 }
 
