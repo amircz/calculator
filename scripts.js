@@ -50,27 +50,15 @@ function addListenersToEuqal() {
 function addListenersToNums() {
     for (var i = 0; i < numButtons.length; i++)
         numButtons[i].addEventListener("click", function () {
-            if (!hasPoint) {
-                if (!hasMinus)
-                    numberBox.value = numberBox.value * 10 + (parseInt(this.textContent));
-                else {
-                    numberBox.value += "" + this.textContent;
-                    hasMinus = false;
-                }
-
-            }
-            else
-                numberBox.value += "" + this.textContent;
+            numberBox.value= addCharToTheEnd(numberBox.value, this.textContent);
         })
 }
 function addListenerToDel() {
     var delButton = document.getElementById("del");
     delButton.addEventListener("click", function () {
-        if (numberBox.value < 10)
-            numberBox.value = "";
-        else {
-            numberBox.value = (parseInt(numberBox.value / 10));
-        }
+        if(numberBox.value[numberBox.value.length-1]==".")
+            hasPoint=false;
+        numberBox.value = removeLastChar(numberBox.value);
     })
 }
 function addListenerToClear() {
@@ -150,6 +138,16 @@ function addAllListeners() {
     addListenerToDel();
     addListenerToClear();
     addListenerToPoint();
+}
+function removeLastChar(str) {
+    result = "";
+    for (var i = 0; i < str.length - 1; i++) {
+        result += str[i];
+    }
+    return result;
+}
+function addCharToTheEnd(str, ch){
+    return str.concat(ch);
 }
 
 addAllListeners();
