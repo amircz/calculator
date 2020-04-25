@@ -1,6 +1,6 @@
 var operator = "";
-var arg1 = "";
-var arg2 = "";
+var firstArgument = "";
+var secondArgument = "0";
 var opButtons = document.querySelectorAll(".op")
 var numButtons = document.querySelectorAll(".num");
 var expression = document.getElementById("expression");
@@ -20,11 +20,17 @@ function addListenersToOps() {
             else {
                 if (operator == "" || hasAnswer) {
                     operator = this.textContent;
-                    if (!hasAnswer)
-                        arg1 = numberBox.value;
+                    if (!hasAnswer) {
+                        if (numberBox.value == "") {
+                            firstArgument = "0";
+                        }
+                        else {
+                            firstArgument = numberBox.value;
+                        }
+                    }
                     else
-                        arg1 = answer;
-                    expression.textContent = arg1 + "\n" + operator;
+                        firstArgument = answer;
+                    expression.textContent = firstArgument + "\n" + operator;
                     numberBox.value = "";
                 }
             }
@@ -34,44 +40,61 @@ function addListenersToOps() {
 
 function addListenersToEuqal() {
     equal.addEventListener("click", function () {
-        if (!arg1 == "") {
-            arg2 = numberBox.value;
-            expression.textContent += arg2 + "=";
+        if (numberBox.value != "") {
+            if (firstArgument != "") { 
+            secondArgument = numberBox.value;
+            expression.textContent += secondArgument + "=";
             numberBox.value = "";
             calculate();
         }
         else {
-            alert("error! please enter only numbers or negetive numbers to the box, not operrators. enter only one argument and use the operators buttons")
-            clearAll();
+            answer = numberBox.value;
+            expression.textContent = answer;
         }
+        hasAnswer = true;
+    }
+    else{
+        clearAll();
+    }
     })
 }
 
 function addListenersToNums() {
-    for (var i = 0; i < numButtons.length; i++)
+    for (var i = 0; i < numButtons.length; i++) {
         numButtons[i].addEventListener("click", function () {
-            numberBox.value = addCharToTheEnd(numberBox.value, this.textContent);
+            numberBox.value = numberBox.value.concat(this.textContent);
         })
+    }
 }
+
+function numbersclicked(event){
+    console.log("mike");
+    numberBox.value = numberBox.value.concat(event.target.textContent);
+}
+
 function addListenerToDel() {
     var delButton = document.getElementById("del");
     delButton.addEventListener("click", function () {
-        if (numberBox.value[numberBox.value.length - 1] == ".")
+        if (numberBox.value[numberBox.value.length - 1] == ".") {
             hasPoint = false;
-        numberBox.value = removeLastChar(numberBox.value);
+        }
+        numberBox.value = numberBox.value.slice(0, numberBox.value.length - 1);
     })
 }
 function addListenerToClear() {
     var clearButton = document.getElementById("clear");
-    clearButton.addEventListener("click", function () {
-        clearAll();
-    })
+    clearButton.addEventListener("click", clearAll);
 }
 function addListenerToPoint() {
     var pointButton = document.getElementById("point");
     pointButton.addEventListener("click", function () {
         if (!hasPoint) {
-            numberBox.value += ".";
+            if (numberBox.value == "") {
+                numberBox.value += "0.";
+            }
+            else {
+                numberBox.value += ".";
+            }
             hasPoint = true;
         }
     })
@@ -81,63 +104,76 @@ function clearAll() {
     expression.textContent = "";
     operator = "";
     hasAnswer = false;
-    arg1 = "";
-    arg2 = "";
+    firstArgument = "";
+    secondArgument = "0";
     hasPoint = false;
     hasMinus = false;
 }
 
 function calculate() {
+    let operationsObject = {
+        "+": () => { return firstArgument + secondArgument; },
+        "-": () => { return firstArgument - secondArgument; },
+        "*": () => { return firstArgument * secondArgument; },
+        "/": () => {
+            if (secondArgument == "0") {
+                alert("ERROR - CANNOT DIVIDE BY 0");
+                clearAll();
+                return "";
+            }
+            return firstArgument / secondArgument;
+        }
+    };
+
+
+    castArgumentsToFloat();
+    answer = operationsObject[operator]();
+    expression.textContent += answer;
     hasAnswer = true;
     hasPoint = false;
-    if (Number.isInteger(arg1))
-        arg1 = parseInt(arg1);
-    else
-        arg1 = parseFloat(arg1);
-
-    if (Number.isInteger(arg2))
-        arg2 = parseInt(arg2);
-    else
-        arg2 = parseFloat(arg2);
-
-    switch (operator) {
-        case "+": {
-            expression.textContent += (arg1 + arg2);
-            answer = arg1 + arg2
-        }
-            break;
-        case "-": {
-            expression.textContent += arg1 - arg2;
-            answer = arg1 - arg2;
-        }
-            break;
-        case "*": {
-            expression.textContent += arg1 * arg2;
-            answer = arg1 * arg2;
-        }
-            break;
-        case "/": {
-            if (arg2 != 0) {
-                expression.textContent += arg1 / arg2;
-                answer = arg1 / arg2;
-            }
-            else {
-                alert("ERROR - CANNOT DIVIDE BY 0")
-                clearAll();
-            }
-
-        }
-            break;
-    }
-    arg1 = "";
+    firstArgument = "";
 }
+
+//     switch (operator) {
+//         case "+": {
+//             expression.textContent += (firstArgument + secondArgument);
+//             answer = firstArgument + secondArgument
+//         }
+//             break;
+//         case "-": {
+//             expression.textContent += firstArgument - secondArgument;
+//             answer = firstArgument - secondArgument;
+//         }
+//             break;
+//         case "*": {
+//             expression.textContent += firstArgument * secondArgument;
+//             answer = firstArgument * secondArgument;
+//         }
+//             break;
+//         case "/": {
+//             if (secondArgument != 0) {
+//                 expression.textContent += firstArgument / secondArgument;
+//                 answer = firstArgument / secondArgument;
+//             }
+//             else {
+//                 alert("ERROR - CANNOT DIVIDE BY 0")
+//                 clearAll();
+//             }
+
+//         }
+//             break;
+//     }
+//     firstArgument = "";
+// }
 function addAllListeners() {
     addListenersToOps();
     addListenersToEuqal();
-    addListenersToNums();
+    //addListenersToNums();
     addListenerToDel();
     addListenerToClear();
     addListenerToPoint();
+    numButtons.forEach(element=>element.onclick=numbersclicked);
+
 }
 function removeLastChar(str) {
     result = "";
@@ -146,8 +182,10 @@ function removeLastChar(str) {
     }
     return result;
 }
-function addCharToTheEnd(str, ch) {
-    return str.concat(ch);
+
+function castArgumentsToFloat() {
+    firstArgument = Number.parseFloat(firstArgument);
+    secondArgument = Number.parseFloat(secondArgument);
 }
 
 addAllListeners();
