@@ -1,51 +1,66 @@
-var operator = "";
-var firstArgument = "";
-var secondArgument = "0";
-var opButtons = document.querySelectorAll(".op")
-var numButtons = document.querySelectorAll(".num");
-var expression = document.getElementById("expression");
-var numberBox = document.getElementById("numberBox");
-var equal = document.getElementById("equal");
-var hasAnswer = false;
-var hasPoint = false;
+const expression = document.querySelector(".expression");
+const numberBox = document.querySelector(".numberBox");
 var answer;
-var hasMinus = false;
-function addListenersToOps() {
-    for (var i = 0; i < opButtons.length; i++)
-        opButtons[i].addEventListener("click", function () {
-            if (numberBox.value == "" && this.textContent == "-") {
-                numberBox.value += "-";
-                hasMinus = true;
-            }
-            else {
-                if (operator == "" || hasAnswer) {
-                    operator = this.textContent;
-                    if (!hasAnswer) {
-                        if (numberBox.value == "") {
-                            firstArgument = "0";
-                        }
-                        else {
-                            firstArgument = numberBox.value;
-                        }
-                    }
-                    else
-                        firstArgument = answer;
-                    expression.textContent = firstArgument + "\n" + operator;
-                    numberBox.value = "";
-                }
-            }
-            hasPoint = false;
-        })
+var operator;
+var firstArgument;
+var secondArgument;
+var hasAnswer;
+
+clearAll();
+
+function setSecondArgumentAndCalculate(value) {
+    secondArgument = value;
+    expression.textContent += secondArgument + "=";
+    numberBox.value = "";
+    calculate();
 }
 
-function addListenersToEuqal() {
-    equal.addEventListener("click", function () {
-        if (numberBox.value != "") {
-            if (firstArgument != "") { 
-            secondArgument = numberBox.value;
-            expression.textContent += secondArgument + "=";
-            numberBox.value = "";
-            calculate();
+function operatorClicked(event) {
+    if (operator == "" || hasAnswer) {
+        setOperatorAndFirstArgument(event.target.textContent);
+    }
+    else {
+        setOperatorAndExpression(event.target.textContent);
+    }
+}
+
+function setOperatorAndFirstArgument(op) {
+    operator = op;
+    if (!hasAnswer) {
+        if (numberBox.value == ""||numberBox.value=="-") {
+            firstArgument = "0";
+        }
+        else {
+            firstArgument = numberBox.value;
+        }
+    }
+    else {
+        firstArgument = answer;
+    }
+    expression.textContent = firstArgument + operator;
+    numberBox.value = "";
+}
+
+function setOperatorAndExpression(op) {
+    operator = op;
+    expression.textContent = firstArgument + operator;
+}
+
+
+function minusClicked(event) {
+    if (numberBox.value == "" && !hasAnswer) {
+        numberBox.value += "-";
+    }
+    else {
+        operatorClicked(event);
+    }
+}
+
+
+function equalClicked(event) {
+    if (numberBox.value != ""&&numberBox.value!="-") {
+        if (firstArgument != "") {
+            setSecondArgumentAndCalculate(numberBox.value)
         }
         else {
             answer = numberBox.value;
@@ -53,52 +68,70 @@ function addListenersToEuqal() {
         }
         hasAnswer = true;
     }
-    else{
-        clearAll();
+    else {
+        if (firstArgument != ""&&numberBox.value!="-") {
+            setSecondArgumentAndCalculate(firstArgument);
+        }
+        else {
+            if (hasAnswer&&numberBox.value!="-") {
+                firstArgument = answer;
+                expression.textContent = firstArgument + operator + secondArgument + "=";
+                calculate();
+            }
+        }
     }
-    })
 }
 
-function addListenersToNums() {
-    for (var i = 0; i < numButtons.length; i++) {
-        numButtons[i].addEventListener("click", function () {
-            numberBox.value = numberBox.value.concat(this.textContent);
-        })
-    }
-}
-
-function numbersclicked(event){
-    console.log("mike");
+function numbersclicked(event) {
     numberBox.value = numberBox.value.concat(event.target.textContent);
 }
 
-function addListenerToDel() {
-    var delButton = document.getElementById("del");
-    delButton.addEventListener("click", function () {
-        if (numberBox.value[numberBox.value.length - 1] == ".") {
-            hasPoint = false;
+
+function deleteClicked(event) {
+    numberBox.value = numberBox.value.slice(0, numberBox.value.length - 1);
+}
+
+
+function pointClicked() {
+    if (!numberBox.value.includes(".")) {
+        if (numberBox.value == "") {
+            numberBox.value += "0.";
         }
-        numberBox.value = numberBox.value.slice(0, numberBox.value.length - 1);
-    })
+        else {
+            numberBox.value += ".";
+        }
+    }
 }
-function addListenerToClear() {
-    var clearButton = document.getElementById("clear");
-    clearButton.addEventListener("click", clearAll);
-}
-function addListenerToPoint() {
-    var pointButton = document.getElementById("point");
-    pointButton.addEventListener("click", function () {
-        if (!hasPoint) {
-            if (numberBox.value == "") {
-                numberBox.value += "0.";
+
+function addListenerToKeyBoard() {
+    document.addEventListener("keydown", event => {
+        let plusButton = document.getElementById("plus");
+        let minusButton = document.getElementById("minus");
+        let multButton = document.getElementById("mult");
+        let divideButton = document.getElementById("divide");
+        let equalButton=document.getElementById("equal");
+        let operationsObject = {
+            "187": plusButton,
+            "189": minusButton,
+            "56": multButton,
+            "191": divideButton,
+            "13": equalButton
+        };
+        if (event.keyCode in operationsObject) {
+            operationsObject[event.keyCode].click();
+        }
+        else {
+            if (event.keyCode >= 48 && event.keyCode <= 57 && document.activeElement != numberBox) {
+                numberBox.value += String.fromCharCode(event.keyCode);
             }
-            else {
+            if (event.keyCode == 190 && document.activeElement != numberBox) {
                 numberBox.value += ".";
             }
-            hasPoint = true;
         }
     })
 }
+
+
 function clearAll() {
     numberBox.value = "";
     expression.textContent = "";
@@ -106,9 +139,8 @@ function clearAll() {
     hasAnswer = false;
     firstArgument = "";
     secondArgument = "0";
-    hasPoint = false;
-    hasMinus = false;
 }
+
 
 function calculate() {
     let operationsObject = {
@@ -122,66 +154,59 @@ function calculate() {
                 return "";
             }
             return firstArgument / secondArgument;
-        }
+        }  
     };
 
+    let maxDigitsFterPoint;
+
+    if (firstArgument.toString().includes(".") || secondArgument.toString().includes(".")) {
+        maxDigitsFterPoint = getNumberOfDigitsAfterPoint(firstArgument) +
+            getNumberOfDigitsAfterPoint(secondArgument);
+    }
 
     castArgumentsToFloat();
+
     answer = operationsObject[operator]();
+    if (maxDigitsFterPoint != undefined) {
+        answer = answer.toFixed(maxDigitsFterPoint);
+    }
+
+    setAllVariablesAfterCalculation();
+}
+
+
+function setAllVariablesAfterCalculation() {
     expression.textContent += answer;
     hasAnswer = true;
-    hasPoint = false;
     firstArgument = "";
+    numberBox.value="";
 }
 
-//     switch (operator) {
-//         case "+": {
-//             expression.textContent += (firstArgument + secondArgument);
-//             answer = firstArgument + secondArgument
-//         }
-//             break;
-//         case "-": {
-//             expression.textContent += firstArgument - secondArgument;
-//             answer = firstArgument - secondArgument;
-//         }
-//             break;
-//         case "*": {
-//             expression.textContent += firstArgument * secondArgument;
-//             answer = firstArgument * secondArgument;
-//         }
-//             break;
-//         case "/": {
-//             if (secondArgument != 0) {
-//                 expression.textContent += firstArgument / secondArgument;
-//                 answer = firstArgument / secondArgument;
-//             }
-//             else {
-//                 alert("ERROR - CANNOT DIVIDE BY 0")
-//                 clearAll();
-//             }
-
-//         }
-//             break;
-//     }
-//     firstArgument = "";
-// }
-function addAllListeners() {
-    addListenersToOps();
-    addListenersToEuqal();
-    //addListenersToNums();
-    addListenerToDel();
-    addListenerToClear();
-    addListenerToPoint();
-    numButtons.forEach(element=>element.onclick=numbersclicked);
-
-}
-function removeLastChar(str) {
-    result = "";
-    for (var i = 0; i < str.length - 1; i++) {
-        result += str[i];
+function getNumberOfDigitsAfterPoint(num) {
+    for (let digitIndex = 0; digitIndex < num.length; digitIndex++) {
+        if (num[digitIndex] == ".")
+            return num.length - digitIndex - 1;
     }
-    return result;
+    return 0;
 }
+
+
+function addAllListeners() {
+    let allButtonsListeners = {
+        "num": numbersclicked,
+        "clear": clearAll,
+        "equal": equalClicked,
+        "del": deleteClicked,
+        "op": operatorClicked,
+        "minus": minusClicked,
+        "point": pointClicked
+    }
+
+    var allButtons = document.getElementsByTagName("button");
+    Array.from(allButtons).forEach(element => element.onclick = allButtonsListeners[element.className]);
+
+}
+
 
 function castArgumentsToFloat() {
     firstArgument = Number.parseFloat(firstArgument);
@@ -189,3 +214,4 @@ function castArgumentsToFloat() {
 }
 
 addAllListeners();
+addListenerToKeyBoard();

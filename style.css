@@ -1,29 +1,30 @@
-#numbers{
+.numbers{
     border-color: black;
     border-style: solid;
     display: inline-block;
     margin-bottom: 5px;
     margin-left: 2px;
 }
-#operators{
+.operators{
     border-color: black;
     border-style: solid;
     display: inline-block;
     margin-right: 2px;
 }
 body{
-    width: fit-content;
+    width: 26%;
     height: fit-content;
     border-color: black;
     border-style: solid;
+    margin-left: 35%;
 }
-#numberBox{
+.numberBox{
     border-color: black;
     border-style: solid;
-    margin-left: 2px;
+    margin-left: 6%;
     margin-top: 35px;
 }
-#calcBody{
+.calcBody{
     padding: 3px;
 }
 button{
@@ -33,13 +34,22 @@ button{
     border-style: solid;
     margin: 2px;
     width: 30px;
+    border-radius: 10%;
 }
 #zero{
     width: 60%;
 }
-#equal{
+.equal{
     width: 90%;
 }
-#expression{
-    width: fit-content;
+.expression{
+max-width: 100%S;
+overflow-x:scroll;
+height: 15%;
+background-color: sandybrown;
+font-size: 0.7em;
+}
+
+#wholecalc{
+    background-color: slategray;
 }
