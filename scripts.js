@@ -40,7 +40,7 @@ function operatorClicked(event) {
 function setOperatorAndFirstArgument(op) {
     operator = op;
     if (answer == "") {
-        if (numberBox.value == "") {
+        if (numberBox.value == ""||numberBox.value=="-") {
             firstArgument = "0";
         }
         else {
@@ -69,25 +69,27 @@ function minusClicked(event) {
 }
 
 function equalClicked(event) {
-    if (numberBox.value != "" && numberBox.value != "-") {
-        if (firstArgument != "") {
-            setSecondArgumentAndCalculate(numberBox.value)
+    if (numberBox.value != "-") {
+        if (numberBox.value != "") {
+            if (firstArgument != "") {
+                setSecondArgumentAndCalculate(numberBox.value)
+            }
+            else {
+                answer = numberBox.value;
+                expression.textContent = answer;
+                numberBox.value = "";
+            }
         }
         else {
-            answer = numberBox.value;
-            expression.textContent = answer;
-            numberBox.value = "";
-        }
-    }
-    else {
-        if (firstArgument != "" && numberBox.value != "-") {
-            setSecondArgumentAndCalculate(firstArgument);
-        }
-        else {
-            if (answer != "" && numberBox.value != "-") {
-                firstArgument = answer;
-                expression.textContent = firstArgument + operator + secondArgument + "=";
-                calculate();
+            if (firstArgument != "") {
+                setSecondArgumentAndCalculate(firstArgument);
+            }
+            else {
+                if (answer != "") {
+                    firstArgument = answer;
+                    expression.textContent = firstArgument + operator + secondArgument + "=";
+                    calculate();
+                }
             }
         }
     }
