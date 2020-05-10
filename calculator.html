@@ -2,47 +2,53 @@
 
 <head>
     <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="scripts.js" async></script>
+    <link href='https://fonts.googleapis.com/css?family=Orbitron' rel='stylesheet' type='text/css'>
+
 </head>
 
 <body>
-    <div>
-        <p id="expression">
-
-        </p>
+    <div id="wholeCalc">
+            <p class="expression" style="font-family: 'Orbitron', sans-serif;"></p>
+            <div id="calcUI">
+        <input type="text" class="numberBox" \>
+        <div class="calcBody"></div>
+        <div class="numbers">
+            <div>
+                <button class="num">7</button>
+                <button class="num">8</button>
+                <button class="num">9</button>
+            </div>
+            <div>
+                <button class="num">4</button>
+                <button class="num">5</button>
+                <button class="num">6</button>
+            </div>
+            <div>
+                <button class="num">1</button>
+                <button class="num">2</button>
+                <button class="num">3</button>
+            </div>
+            <button id="zero" class="num">0</button>
+            <button class="point" id="point">.</button>
+        </div>
+        <div class="operators">
+            <div>
+                <button class="del">→</button>
+                <button class="clear">c</button>
+            </div>
+            <div>
+                <button class="op" id="plus">+</button>
+                <button class="minus" id="minus">-</button>
+            </div>
+            <div>
+                <button class="op" id="mult">*</button>
+                <button class="op" id="divide">/</button>
+            </div>
+            <button class="equal" id="equal">=</button>
+        </div>
     </div>
-    <div>
-        <input type="text" id="numberBox">
     </div>
-    <div id="calcBody"></div>
-    <div id="numbers">
-        <button class="num">7</button>
-        <button class="num">8</button>
-        <button class="num">9</button>
-        <br>
-        <button class="num">4</button>
-        <button class="num">5</button>
-        <button class="num">6</button>
-        <br>
-        <button class="num">1</button>
-        <button class="num">2</button>
-        <button class="num">3</button>
-        <br>
-        <button id="zero" class="num">0</button>
-        <button id="point">.</button>
-    </div>
-    <div id="operators">
-        <button id="del">→</button>
-        <button id="clear">c</button>
-        <br>
-        <button class="op">+</button>
-        <button class="op">-</button>
-        <br>
-        <button class="op">*</button>
-        <button class="op">/</button>
-        <br>
-        <button id="equal">=</button>
-    </div>
-    <script src="scripts.js"></script>
 </body>
 
 </html>
