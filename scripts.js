@@ -92,6 +92,7 @@ function addListenerToKeyBoard() {
             "13": equalButton,
             "190": pointButon
         };
+        
         //equal case
         if (event.keyCode == "13") {
             operationsObject[event.keyCode].click();
@@ -136,7 +137,6 @@ function createHelper() {
 
 function addExpressionToStackAndCalculatePriority(expression) {
     let tempArgument;
-    let tempOp;
     let argumentsList = [];
     argumentsList = expression.split(",");
     let isFirst = true;
