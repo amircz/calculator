@@ -1,8 +1,8 @@
 const expression = document.querySelector(".expression");
 const numberBox = document.querySelector(".numberBox");
 let answer;
+const emptyAnswer = "z";
 let complexExpHelper = "";
-let expressionIndex = 0;
 let expressionStack = [];
 const allOperators = ["+", "-", "*", "/"];
 let operationsObjectGlobal = {
@@ -23,38 +23,16 @@ clearAll(true);
 
 function operatorClicked(event) {
     if (!allOperators.includes(numberBox.value[numberBox.value.length - 1])) {
-        if (answer != "z") {
+        if (answer != emptyAnswer) {
             expression.textContent = "";
             numberBox.value += answer;
-            answer = "z";
+            answer = emptyAnswer;
         }
         if (numberBox.value == "" && event.target.textContent != "-") {
             numberBox.value += "0";
         }
         numberBox.value += event.target.textContent;
     }
-}
-
-function setOperatorAndFirstArgument(op) {
-    operator = op;
-    if (answer == "z") {
-        if (numberBox.value == "" || numberBox.value == "-") {
-            firstArgument = "0";
-        }
-        else {
-            firstArgument = numberBox.value;
-        }
-    }
-    else {
-        firstArgument = answer;
-    }
-    expression.textContent = firstArgument + operator;
-    numberBox.value = "";
-}
-
-function setOperatorAndExpression(op) {
-    operator = op;
-    expression.textContent = firstArgument + operator;
 }
 
 function minusClicked(event) {
@@ -77,6 +55,9 @@ function equalClicked(event) {
 }
 
 function numbersclicked(event) {
+    if (numberBox.value == "" && answer != emptyAnswer) {
+        clearAll(true);
+    }
     numberBox.value = numberBox.value.concat(event.target.textContent);
 }
 
@@ -123,9 +104,11 @@ function addListenerToKeyBoard() {
                 }
             }
             else {
-                //digit case ascii between 48 and 57
                 if (event.keyCode >= "0".charCodeAt(0) && event.keyCode <= "9".charCodeAt(0) &&
                     document.activeElement != numberBox) {
+                    if (answer != emptyAnswer && numberBox.value == "") {
+                        clearAll(true);
+                    }
                     numberBox.value += String.fromCharCode(event.keyCode);
                 }
             }
@@ -133,9 +116,11 @@ function addListenerToKeyBoard() {
     })
 }
 
+//the goal of this is to create a string which conatins the exercise but with , before and after each operator
 function createHelper() {
     for (let boxIndex = 0; boxIndex < numberBox.value.length; boxIndex++) {
         if (allOperators.includes(numberBox.value[boxIndex])) {
+
             //if not starting with negetive number
             if (boxIndex != 0 || numberBox.value[boxIndex] != "-") {
                 complexExpHelper += ",";
@@ -193,12 +178,12 @@ function clearAll(toClearExpression) {
     if (toClearExpression) {
         expression.textContent = "";
     }
-    //used z because answer="" is the same as answer=0, which is optional case
-    answer = "z";
+    answer = emptyAnswer;
     numberBox.value = "";
     complexExpHelper = "";
     expressionStack.push(0);
     expressionStack.push("+");
+    answer = emptyAnswer;
 }
 
 function addAllListeners() {
