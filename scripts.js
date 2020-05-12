@@ -1,17 +1,20 @@
-const expression = document.querySelector(".expression");
-const numberBox = document.querySelector(".numberBox");
+const EXPRESSION = document.querySelector(".expression");
+const NUMBER_BOX = document.querySelector(".numberBox");
+const MILLLION = 1000000;
 let answer;
-const emptyAnswer = "z";
-let complexExpHelper = "";
-let expressionStack = [];
-const allOperators = ["+", "-", "*", "/"];
+const EMPTY_ANSWER = "z";
+let expressionWithCommaAfterAndBeforeOperators = "";
+let hasPoint = false;
+let opertatorsStack = [];
+let numbersStack = [];
+const ALL_OPERATORS = ["+", "-", "*", "/"];
 let operationsObjectGlobal = {
     "+": (first, second) => { return first + second; },
     "-": (first, second) => { return first - second; },
     "*": (first, second) => { return first * second; },
     "/": (first, second) => {
         if (second == "0") {
-            expression.textContent = "ERROR - DIVIDE BY 0";
+            EXPRESSION.textContent = "ERROR - DIVIDE BY 0";
             clearAll(false);
             return "";
         }
@@ -22,57 +25,74 @@ let operationsObjectGlobal = {
 clearAll(true);
 
 function operatorClicked(event) {
-    if (!allOperators.includes(numberBox.value[numberBox.value.length - 1])) {
-        if (answer != emptyAnswer) {
-            expression.textContent = "";
-            numberBox.value += answer;
-            answer = emptyAnswer;
+    let toaddOperator = true;
+    if (!ALL_OPERATORS.includes(NUMBER_BOX.value[NUMBER_BOX.value.length - 1])) {
+        if (answer != EMPTY_ANSWER) {
+            EXPRESSION.textContent = "";
+            NUMBER_BOX.value += answer;
+            answer = EMPTY_ANSWER;
         }
-        if (numberBox.value == "" && event.target.textContent != "-") {
-            numberBox.value += "0";
+        if (NUMBER_BOX.value == "" && event.target.textContent != "-") {
+            NUMBER_BOX.value += "0";
         }
-        numberBox.value += event.target.textContent;
     }
-}
+    else {
 
-function minusClicked(event) {
-    operatorClicked(event);
+        //case of switching operator
+        if (NUMBER_BOX.value.length != 1) {
+            NUMBER_BOX.value = NUMBER_BOX.value.slice(0, NUMBER_BOX.value.length - 1);
+        }
+        else {
+
+            //in case of expression which started with minus and than tried to change
+            toaddOperator = false;
+        }
+    }
+    hasPoint = false;
+    if (toaddOperator) {
+        NUMBER_BOX.value += event.target.textContent;
+    }
 }
 
 function equalClicked(event) {
-    if (numberBox.value == "") {
+    if (NUMBER_BOX.value == "") {
         answer = 0;
-        expression.textContent = "0";
+        EXPRESSION.textContent = "0";
     }
     else {
-        complexExpHelper = "";
-        expression.textContent = numberBox.value;
+        expressionWithCommaAfterAndBeforeOperators = "";
+        EXPRESSION.textContent = NUMBER_BOX.value;
+        if (ALL_OPERATORS.includes(EXPRESSION.textContent[EXPRESSION.textContent.length - 1])) {
+            EXPRESSION.textContent = EXPRESSION.textContent.slice(0, EXPRESSION.textContent.length - 1);
+        }
         createHelper();
-        addExpressionToStackAndCalculatePriority(complexExpHelper);
+        addExpressionToStackAndCalculatePriority(expressionWithCommaAfterAndBeforeOperators);
         calculateAndUpdateExpression();
-        numberBox.value = "";
+        NUMBER_BOX.value = "";
     }
+    hasPoint = false;
 }
 
 function numbersclicked(event) {
-    if (numberBox.value == "" && answer != emptyAnswer) {
+    if (NUMBER_BOX.value == "" && answer != EMPTY_ANSWER) {
         clearAll(true);
     }
-    numberBox.value = numberBox.value.concat(event.target.textContent);
+    NUMBER_BOX.value = NUMBER_BOX.value.concat(event.target.textContent);
 }
 
 function deleteClicked(event) {
-    numberBox.value = numberBox.value.slice(0, numberBox.value.length - 1);
+    NUMBER_BOX.value = NUMBER_BOX.value.slice(0, NUMBER_BOX.value.length - 1);
 }
 
 function pointClicked() {
-    if (numberBox.value[numberBox.value.length - 1] != ".") {
-        if (numberBox.value == "") {
-            numberBox.value += "0.";
+    if (!hasPoint) {
+        if (NUMBER_BOX.value == "" || ALL_OPERATORS.includes(NUMBER_BOX.value[NUMBER_BOX.value.length - 1])) {
+            NUMBER_BOX.value += "0.";
         }
         else {
-            numberBox.value += ".";
+            NUMBER_BOX.value += ".";
         }
+        hasPoint = true;
     }
 }
 
@@ -92,7 +112,7 @@ function addListenerToKeyBoard() {
             "13": equalButton,
             "190": pointButon
         };
-        
+
         //equal case
         if (event.keyCode == "13") {
             operationsObject[event.keyCode].click();
@@ -100,39 +120,42 @@ function addListenerToKeyBoard() {
         else {
             if (event.keyCode in operationsObject) {
                 operationsObject[event.keyCode].click();
-                if (document.activeElement == numberBox) {
-                    numberBox.value = numberBox.value.slice(0, numberBox.value.length - 1);
+                if (document.activeElement == NUMBER_BOX) {
+                    NUMBER_BOX.value = NUMBER_BOX.value.slice(0, NUMBER_BOX.value.length - 1);
                 }
             }
             else {
                 if (event.keyCode >= "0".charCodeAt(0) && event.keyCode <= "9".charCodeAt(0) &&
-                    document.activeElement != numberBox) {
-                    if (answer != emptyAnswer && numberBox.value == "") {
+                    document.activeElement != NUMBER_BOX) {
+                    if (answer != EMPTY_ANSWER && NUMBER_BOX.value == "") {
                         clearAll(true);
                     }
-                    numberBox.value += String.fromCharCode(event.keyCode);
+                    NUMBER_BOX.value += String.fromCharCode(event.keyCode);
                 }
             }
         }
     })
 }
 
-//the goal of this is to create a string which conatins the exercise but with , before and after each operator
+//the goal of this function is to create a string which conatins the exercise but with , before and after each operator
+//4+3*2  ->  4,+,3,*,2
 function createHelper() {
-    for (let boxIndex = 0; boxIndex < numberBox.value.length; boxIndex++) {
-        if (allOperators.includes(numberBox.value[boxIndex])) {
+    for (let boxIndex = 0; boxIndex < NUMBER_BOX.value.length; boxIndex++) {
+        if (ALL_OPERATORS.includes(NUMBER_BOX.value[boxIndex])) {
 
             //if not starting with negetive number
-            if (boxIndex != 0 || numberBox.value[boxIndex] != "-") {
-                complexExpHelper += ",";
+            if (boxIndex != 0 || NUMBER_BOX.value[boxIndex] != "-") {
+                expressionWithCommaAfterAndBeforeOperators += ",";
             }
-            complexExpHelper += numberBox.value[boxIndex];
-            complexExpHelper += ",";
+            expressionWithCommaAfterAndBeforeOperators += NUMBER_BOX.value[boxIndex];
+            expressionWithCommaAfterAndBeforeOperators += ",";
         }
         else {
-            complexExpHelper += numberBox.value[boxIndex];
+            expressionWithCommaAfterAndBeforeOperators += NUMBER_BOX.value[boxIndex];
         }
     }
+    if (expressionWithCommaAfterAndBeforeOperators[expressionWithCommaAfterAndBeforeOperators.length - 1] == ",")
+        expressionWithCommaAfterAndBeforeOperators += "0";
 }
 
 function addExpressionToStackAndCalculatePriority(expression) {
@@ -148,11 +171,14 @@ function addExpressionToStackAndCalculatePriority(expression) {
         if (tempArgument != "*" && tempArgument != "/") {
             if (tempArgument != "-" && tempArgument != "+") {
                 tempArgument = Number.parseFloat(tempArgument);
+                numbersStack.push(tempArgument);
             }
-            expressionStack.push(tempArgument);
+            else {
+                opertatorsStack.push(tempArgument);
+            }
         }
         else {
-            expressionStack.push(operationsObjectGlobal[tempArgument](expressionStack.pop(), argumentsList.shift()));
+            numbersStack.push(operationsObjectGlobal[tempArgument](numbersStack.pop(), argumentsList.shift()));
         }
         isFirst = false;
     }
@@ -162,28 +188,37 @@ function calculateAndUpdateExpression() {
     let tempFirst;
     let tempSecond;
     let tempOp;
-    while (expressionStack.length != 1) {
-        tempFirst = expressionStack.shift();
-        tempOp = expressionStack.shift();
-        tempSecond = expressionStack.shift();
-        expressionStack.unshift(operationsObjectGlobal[tempOp](tempFirst, tempSecond));
+    while (numbersStack.length != 1) {
+        tempFirst = numbersStack.shift();
+        tempOp = opertatorsStack.shift();
+        tempSecond = numbersStack.shift();
+        numbersStack.unshift(operationsObjectGlobal[tempOp](tempFirst, tempSecond));
     }
-    answer = expressionStack.pop();
-    expression.textContent += "=" + answer;
-    expressionStack = [];
+    answer = numbersStack.pop();
+    fixAnswer();
+    EXPRESSION.textContent += "=" + answer;
+    numbersStack = [];
+    opertatorsStack = [];
 
+}
+
+function fixAnswer() {
+    answer *= MILLLION;
+    answer = amswer = parseFloat(answer).toFixed(1);
+    answer /= MILLLION;
 }
 
 function clearAll(toClearExpression) {
     if (toClearExpression) {
-        expression.textContent = "";
+        EXPRESSION.textContent = "";
     }
-    answer = emptyAnswer;
-    numberBox.value = "";
-    complexExpHelper = "";
-    expressionStack.push(0);
-    expressionStack.push("+");
-    answer = emptyAnswer;
+    answer = EMPTY_ANSWER;
+    NUMBER_BOX.value = "";
+    expressionWithCommaAfterAndBeforeOperators = "";
+    numbersStack.push(0);
+    opertatorsStack.push("+");
+    answer = EMPTY_ANSWER;
+    hasPoint = false;
 }
 
 function addAllListeners() {
@@ -193,7 +228,6 @@ function addAllListeners() {
         "equal": equalClicked,
         "del": deleteClicked,
         "op": operatorClicked,
-        "minus": minusClicked,
         "point": pointClicked
     }
 
