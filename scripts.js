@@ -65,7 +65,7 @@ function equalClicked(event) {
         if (ALL_OPERATORS.includes(EXPRESSION.textContent[EXPRESSION.textContent.length - 1])) {
             EXPRESSION.textContent = EXPRESSION.textContent.slice(0, EXPRESSION.textContent.length - 1);
         }
-        createHelper();
+        createExpressionWithCommas();
         addExpressionToStackAndCalculatePriority(expressionWithCommaAfterAndBeforeOperators);
         calculateAndUpdateExpression();
         NUMBER_BOX.value = "";
@@ -139,7 +139,7 @@ function addListenerToKeyBoard() {
 
 //the goal of this function is to create a string which conatins the exercise but with , before and after each operator
 //4+3*2  ->  4,+,3,*,2
-function createHelper() {
+function createExpressionWithCommas() {
     for (let boxIndex = 0; boxIndex < NUMBER_BOX.value.length; boxIndex++) {
         if (ALL_OPERATORS.includes(NUMBER_BOX.value[boxIndex])) {
 
@@ -159,40 +159,40 @@ function createHelper() {
 }
 
 function addExpressionToStackAndCalculatePriority(expression) {
-    let tempArgument;
+    let currentArgument;
     let argumentsList = [];
     argumentsList = expression.split(",");
     let isFirst = true;
     while (argumentsList.length != 0) {
-        tempArgument = argumentsList.shift();
-        if (isFirst && tempArgument == "-") {
-            tempArgument += argumentsList.shift();
+        currentArgument = argumentsList.shift();
+        if (isFirst && currentArgument == "-") {
+            currentArgument += argumentsList.shift();
         }
-        if (tempArgument != "*" && tempArgument != "/") {
-            if (tempArgument != "-" && tempArgument != "+") {
-                tempArgument = Number.parseFloat(tempArgument);
-                numbersStack.push(tempArgument);
+        if (currentArgument != "*" && currentArgument != "/") {
+            if (currentArgument != "-" && currentArgument != "+") {
+                currentArgument = Number.parseFloat(currentArgument);
+                numbersStack.push(currentArgument);
             }
             else {
-                opertatorsStack.push(tempArgument);
+                opertatorsStack.push(currentArgument);
             }
         }
         else {
-            numbersStack.push(operationsObjectGlobal[tempArgument](numbersStack.pop(), argumentsList.shift()));
+            numbersStack.push(operationsObjectGlobal[currentArgument](numbersStack.pop(), argumentsList.shift()));
         }
         isFirst = false;
     }
 }
 
 function calculateAndUpdateExpression() {
-    let tempFirst;
-    let tempSecond;
-    let tempOp;
+    let currentFirstArgument;
+    let currentSecondArgument;
+    let currentoperator;
     while (numbersStack.length != 1) {
-        tempFirst = numbersStack.shift();
-        tempOp = opertatorsStack.shift();
-        tempSecond = numbersStack.shift();
-        numbersStack.unshift(operationsObjectGlobal[tempOp](tempFirst, tempSecond));
+        currentFirstArgument = numbersStack.shift();
+        currentoperator = opertatorsStack.shift();
+        currentSecondArgument = numbersStack.shift();
+        numbersStack.unshift(operationsObjectGlobal[currentoperator](currentFirstArgument, currentSecondArgument));
     }
     answer = numbersStack.pop();
     fixAnswer();
